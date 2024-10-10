@@ -1,0 +1,11 @@
+function [label_sc_onkernel, U] = sc_onkernel(K, nCluster,nRepeat)
+numEV = nCluster*1.5;
+dd = max(abs(sum(K,1)), 1e-9);
+inv_sqrt_D = diag(1./sqrt(dd));
+L = inv_sqrt_D*K*inv_sqrt_D;
+L = (L+L')/2;
+opts.disp = 0;
+[V, E] = eigs(L,ceil(numEV),'LA',opts);
+U = V(:,1:ceil(nCluster*1));
+U = NormalizeFea(U);
+label_sc_onkernel = litekmeans(U, nCluster, 'MaxIter', 100, 'Replicates', nRepeat);
